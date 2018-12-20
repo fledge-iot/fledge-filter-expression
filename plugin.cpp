@@ -21,16 +21,19 @@
 #define FILTER_NAME "expression"
 #define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Expression filter plugin\", " \
                        		"\"type\" : \"string\", " \
-				"\"default\" : \"" FILTER_NAME "\" }, " \
+				"\"default\" : \"" FILTER_NAME "\", \"readonly\" : \"true\" }, " \
 			 "\"enable\": {\"description\": \"A switch that can be used to enable or disable execution of " \
 					 "the scale filter.\", " \
 				"\"type\": \"boolean\", " \
+				"\"displayName\" : \"Enable\", " \
 				"\"default\": \"false\" }, " \
 			 "\"expression\": {\"description\": \"Expression to apply\", " \
 				"\"type\": \"string\", " \
-				"\"default\": \"log(x)\" }, " \
+				"\"default\": \"log(x)\", \"displayName\" : \"Expression to apply\", " \
+				"\"order\" : \"2\" }, " \
 			 "\"name\": {\"description\": \"The name of the new data point\", " \
-				"\"type\": \"string\", " \
+				"\"type\": \"string\", \"displayName\" : \"Datapoint Name\", " \
+				"\"order\" : \"1\", " \
 				"\"default\": \"calculated\" } " \
 			"}"
 
