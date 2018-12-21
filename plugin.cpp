@@ -25,7 +25,7 @@
 			 "\"enable\": {\"description\": \"A switch that can be used to enable or disable execution of " \
 					 "the scale filter.\", " \
 				"\"type\": \"boolean\", " \
-				"\"displayName\" : \"Enable\", " \
+				"\"displayName\" : \"Enabled\", " \
 				"\"default\": \"false\" }, " \
 			 "\"expression\": {\"description\": \"Expression to apply\", " \
 				"\"type\": \"string\", " \
