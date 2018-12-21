@@ -19,7 +19,7 @@
 #include <expression_filter.h>
 
 #define FILTER_NAME "expression"
-#define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Expression filter plugin\", " \
+#define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Apply an expression to the data stream\", " \
                        		"\"type\" : \"string\", " \
 				"\"default\" : \"" FILTER_NAME "\", \"readonly\" : \"true\" }, " \
 			 "\"enable\": {\"description\": \"A switch that can be used to enable or disable execution of " \
