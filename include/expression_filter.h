@@ -13,7 +13,8 @@
 #include <reading_set.h>
 #include <config_category.h>
 #include <string>                 
-#include <logger.h>                 
+#include <logger.h>
+#include <mutex>                 
 
 /**
  * A FogLAMP filter that applies an expression across a set
@@ -36,10 +37,12 @@ class ExpressionFilter : public FogLampFilter {
 				m_dpname = dpname;
 			};
 		void	ingest(const std::vector<Reading *>& readings);
+		void	reconfigure(const std::string& newConfig);
 	private:
 		void 		handleConfig(const ConfigCategory& conf);
 		std::string	m_expression;
 		std::string	m_dpname;
+		std::mutex	m_configMutex;
 };
 
 

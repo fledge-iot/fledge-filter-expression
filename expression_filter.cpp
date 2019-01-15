@@ -54,6 +54,7 @@ string				variableNames[20];
 Reading				*reading;
 int				varCount = 0;
 
+	lock_guard<mutex> guard(m_configMutex);
 	/* Use the first reading to work out what the variables are */
 	reading = readings[0];
 	vector<Datapoint *>	datapoints = reading->getReadingData();
@@ -114,6 +115,20 @@ int				varCount = 0;
 		(*reading)->addDatapoint(new Datapoint(m_dpname, v));
 	}
 }
+
+/**
+ * Reconfigure the filter. We must hold the mutex here to stop the ingest
+ * as we manipulate the m_scaleSet vector when recreating the scale sets
+ *
+ * @param conf		The new configuration to apply
+ */
+void ExpressionFilter::reconfigure(const string& conf)
+{
+	lock_guard<mutex> guard(m_configMutex);
+	setConfig(conf);
+	handleConfig(m_config);
+}
+
 
 /**
  * Handle the configuration of the plugin.
