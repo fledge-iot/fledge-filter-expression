@@ -108,6 +108,18 @@ void plugin_ingest(PLUGIN_HANDLE *handle,
 }
 
 /**
+ * Reconfigure the plugin
+ *
+ * @param handle	The plugin handle
+ * @param bewConfig	The new configuration
+ */
+void plugin_reconfigure(PLUGIN_HANDLE *handle, const string& newConfig)
+{
+	ExpressionFilter *filter = (ExpressionFilter *)handle;
+	filter->reconfigure(newConfig);
+}
+
+/**
  * Call the shutdown method in the plugin
  */
 void plugin_shutdown(PLUGIN_HANDLE *handle)
