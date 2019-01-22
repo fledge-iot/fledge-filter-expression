@@ -54,6 +54,11 @@ string				variableNames[20];
 Reading				*reading;
 int				varCount = 0;
 
+	if (!readings.size())
+	{
+		return;
+	}
+
 	lock_guard<mutex> guard(m_configMutex);
 	/* Use the first reading to work out what the variables are */
 	reading = readings[0];
