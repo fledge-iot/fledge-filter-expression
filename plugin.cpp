@@ -17,6 +17,7 @@
 #include <iostream>
 #include <filter_plugin.h>
 #include <expression_filter.h>
+#include <version.h>
 
 #define FILTER_NAME "expression"
 #define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Apply an expression to the data stream\", " \
@@ -49,7 +50,7 @@ extern "C" {
  */
 static PLUGIN_INFORMATION info = {
         FILTER_NAME,              // Name
-        "1.0.0",                  // Version
+        VERSION,                  // Version
         0,                        // Flags
         PLUGIN_TYPE_FILTER,       // Type
         "1.0.0",                  // Interface version
