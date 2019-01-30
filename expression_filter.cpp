@@ -13,9 +13,12 @@
 #include <logger.h>
 #include <exprtk.hpp>
 #include <expression_filter.h>
+#include <math.h>
 
 using namespace std;
 using namespace rapidjson;
+
+#define MAX_VARS	20	// Maximum number of variables supported in an expression
 
 /**
  * Construct a ExpressionFilter, call the base class constructor and handle the
@@ -49,8 +52,8 @@ void ExpressionFilter::ingest(const vector<Reading *>& readings)
 exprtk::expression<double>	expression;
 exprtk::symbol_table<double>	symbolTable;
 exprtk::parser<double>		parser;
-double				variables[20];
-string				variableNames[20];
+double				variables[MAX_VARS];
+string				variableNames[MAX_VARS];
 Reading				*reading;
 int				varCount = 0;
 
@@ -66,7 +69,7 @@ int				varCount = 0;
 		{
 			variableNames[varCount++] = (*it)->getName();
 		}
-		if (varCount == 20)
+		if (varCount == MAX_VARS)
 		{
 			Logger::getLogger()->error("Too many datapoints in reading");
 			break;
@@ -100,7 +103,12 @@ int				varCount = 0;
 			{
 				value = dpvalue.toDouble();
 			}
+			else
+			{
+				continue;	// Unsupported type
+			}
 			
+			bool found = false;
 			for (int i = 0; i < varCount; i++)
 			{
 				if (variableNames[i].compare(name) == 0)
@@ -109,10 +117,31 @@ int				varCount = 0;
 					break;
 				}
 			}
+			if (found == false && varCount < MAX_VARS - 1)
+			{
+				// Not previously seen this data point, add it.
+				variableNames[varCount] = name;
+				variables[varCount] = value;
+				symbolTable.add_variable(variableNames[varCount], variables[varCount]);
+				varCount++;
+
+				// We have added a new variable so must re-parse the expression
+				expression.register_symbol_table(symbolTable);
+				parser.compile(m_expression.c_str(), expression);
+			}
 		}
-		double newValue = expression.value();
-		DatapointValue v(newValue);
-		(*reading)->addDatapoint(new Datapoint(m_dpname, v));
+		try {
+			double newValue = expression.value();
+			// If we yield a valid result add it as a data point
+			if (isnan(newValue) == false && isfinite(newValue))
+			{
+				DatapointValue v(newValue);
+				(*reading)->addDatapoint(new Datapoint(m_dpname, v));
+			}
+		} catch (exception &e) {
+			// Failed to evaluate expression, so just continue
+			Logger::getLogger()->error("Exception processing expression %s", m_expression.c_str());
+		}
 	}
 }
 
