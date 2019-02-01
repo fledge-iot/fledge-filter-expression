@@ -114,6 +114,7 @@ int				varCount = 0;
 				if (variableNames[i].compare(name) == 0)
 				{
 					variables[i] = value;
+					found = true;
 					break;
 				}
 			}
