@@ -17,20 +17,24 @@
 #include <iostream>
 #include <filter_plugin.h>
 #include <expression_filter.h>
+#include <version.h>
 
 #define FILTER_NAME "expression"
-#define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Expression filter plugin\", " \
+#define DEFAULT_CONFIG "{\"plugin\" : { \"description\" : \"Apply an expression to the data stream\", " \
                        		"\"type\" : \"string\", " \
-				"\"default\" : \"" FILTER_NAME "\" }, " \
+				"\"default\" : \"" FILTER_NAME "\", \"readonly\" : \"true\" }, " \
 			 "\"enable\": {\"description\": \"A switch that can be used to enable or disable execution of " \
 					 "the scale filter.\", " \
 				"\"type\": \"boolean\", " \
+				"\"displayName\" : \"Enabled\", " \
 				"\"default\": \"false\" }, " \
 			 "\"expression\": {\"description\": \"Expression to apply\", " \
 				"\"type\": \"string\", " \
-				"\"default\": \"log(x)\" }, " \
+				"\"default\": \"log(x)\", \"displayName\" : \"Expression to apply\", " \
+				"\"order\" : \"2\" }, " \
 			 "\"name\": {\"description\": \"The name of the new data point\", " \
-				"\"type\": \"string\", " \
+				"\"type\": \"string\", \"displayName\" : \"Datapoint Name\", " \
+				"\"order\" : \"1\", " \
 				"\"default\": \"calculated\" } " \
 			"}"
 
@@ -46,12 +50,18 @@ extern "C" {
  */
 static PLUGIN_INFORMATION info = {
         FILTER_NAME,              // Name
-        "1.0.0",                  // Version
+        VERSION,                  // Version
         0,                        // Flags
         PLUGIN_TYPE_FILTER,       // Type
         "1.0.0",                  // Interface version
 	DEFAULT_CONFIG	          // Default plugin configuration
 };
+
+typedef struct
+{
+	ExpressionFilter	*handle;
+	std::string	configCatName;
+} FILTER_INFO;
 
 /**
  * Return the information about this plugin
@@ -75,12 +85,14 @@ PLUGIN_HANDLE plugin_init(ConfigCategory *config,
 			  OUTPUT_HANDLE *outHandle,
 			  OUTPUT_STREAM output)
 {
-	ExpressionFilter *handle = new ExpressionFilter(FILTER_NAME,
-						  *config,
-						  outHandle,
-						  output);
+	FILTER_INFO *info = new FILTER_INFO;
+	info->handle = new ExpressionFilter(FILTER_NAME,
+						*config,
+						outHandle,
+						output);
+	info->configCatName = config->getName();
 	
-	return (PLUGIN_HANDLE)handle;
+	return (PLUGIN_HANDLE)info;
 }
 
 /**
@@ -92,7 +104,8 @@ PLUGIN_HANDLE plugin_init(ConfigCategory *config,
 void plugin_ingest(PLUGIN_HANDLE *handle,
 		   READINGSET *readingSet)
 {
-	ExpressionFilter *filter = (ExpressionFilter *)handle;
+	FILTER_INFO *info = (FILTER_INFO *) handle;
+	ExpressionFilter *filter = info->handle;
 	if (!filter->isEnabled())
 	{
 		// Current filter is not active: just pass the readings set
@@ -101,7 +114,27 @@ void plugin_ingest(PLUGIN_HANDLE *handle,
 	}
 
 	filter->ingest(((ReadingSet *)readingSet)->getAllReadings());
+	const vector<Reading *>& readings = ((ReadingSet *)readingSet)->getAllReadings();
+	for (vector<Reading *>::const_iterator elem = readings.begin();
+						      elem != readings.end();
+						      ++elem)
+	{
+		AssetTracker::getAssetTracker()->addAssetTrackingTuple(info->configCatName, (*elem)->getAssetName(), string("Filter"));
+	}
 	filter->m_func(filter->m_data, readingSet);
+}
+
+/**
+ * Reconfigure the plugin
+ *
+ * @param handle	The plugin handle
+ * @param newConfig	The new configuration
+ */
+void plugin_reconfigure(PLUGIN_HANDLE *handle, const string& newConfig)
+{
+	FILTER_INFO *info = (FILTER_INFO *) handle;
+	ExpressionFilter *filter = info->handle;
+	filter->reconfigure(newConfig);
 }
 
 /**
@@ -109,8 +142,9 @@ void plugin_ingest(PLUGIN_HANDLE *handle,
  */
 void plugin_shutdown(PLUGIN_HANDLE *handle)
 {
-	ExpressionFilter *filter = (ExpressionFilter *)handle;
-	delete filter;
+	FILTER_INFO *info = (FILTER_INFO *) handle;
+	delete info->handle;
+	delete info;
 }
 
 };
