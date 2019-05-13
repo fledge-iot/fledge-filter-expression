@@ -139,7 +139,7 @@ int				varCount = 0;
 		try {
 			double newValue = expression.value();
 			// If we yield a valid result add it as a data point
-			if (isnan(newValue) == false && isfinite(newValue))
+			if (std::isnan(newValue) == false && isfinite(newValue))
 			{
 				DatapointValue v(newValue);
 				(*reading)->addDatapoint(new Datapoint(m_dpname, v));
