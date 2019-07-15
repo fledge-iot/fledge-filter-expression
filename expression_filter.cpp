@@ -18,7 +18,7 @@
 using namespace std;
 using namespace rapidjson;
 
-#define MAX_VARS	20	// Maximum number of variables supported in an expression
+#define MAX_VARS	40	// Maximum number of variables supported in an expression
 
 /**
  * Construct a ExpressionFilter, call the base class constructor and handle the
@@ -73,6 +73,7 @@ int				varCount = 0;
 				dpvalue.getType() == DatapointValue::T_FLOAT)
 		{
 			variableNames[varCount++] = (*it)->getName();
+			variableNames[varCount++] = reading->getAssetName() + "." + (*it)->getName();
 		}
 		if (varCount == MAX_VARS)
 		{
@@ -114,19 +115,28 @@ int				varCount = 0;
 			}
 			
 			bool found = false;
+			string fullname = (*reading)->getAssetName() + "." + name;
 			for (int i = 0; i < varCount; i++)
 			{
 				if (variableNames[i].compare(name) == 0)
 				{
 					variables[i] = value;
 					found = true;
-					break;
+				}
+				else if (variableNames[i].compare(fullname) == 0)
+				{
+					variables[i] = value;
+					found = true;
 				}
 			}
 			if (found == false && varCount < MAX_VARS - 1)
 			{
 				// Not previously seen this data point, add it.
 				variableNames[varCount] = name;
+				variables[varCount] = value;
+				symbolTable.add_variable(variableNames[varCount], variables[varCount]);
+				varCount++;
+				variableNames[varCount] = fullname;
 				variables[varCount] = value;
 				symbolTable.add_variable(variableNames[varCount], variables[varCount]);
 				varCount++;
