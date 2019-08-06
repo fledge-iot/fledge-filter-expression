@@ -95,6 +95,10 @@ int				varCount = 0;
 						      reading != readings.end();
 						      ++reading)
 	{
+		for (int i = 0; i < varCount; i++)
+		{
+			variables[i] = nan("undefined");
+		}
 		datapoints = (*reading)->getReadingData();
 		for (auto it = datapoints.begin(); it != datapoints.end(); it++)
 		{
