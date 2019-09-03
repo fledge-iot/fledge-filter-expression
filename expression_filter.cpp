@@ -84,11 +84,15 @@ int				varCount = 0;
 
 	for (int i = 0; i < varCount; i++)
 	{
-		symbolTable.add_variable(variableNames[i], variables[i]);
+		if (!symbolTable.add_raw_variable(variableNames[i], variables[i]))
+			Logger::getLogger()->error("Failed to add variable %s", variableNames[i].c_str());
 	}
 	symbolTable.add_constants();
 	expression.register_symbol_table(symbolTable);
-	parser.compile(m_expression.c_str(), expression);
+	if (!parser.compile(m_expression.c_str(), expression))
+	{
+		Logger::getLogger()->error("Expression compilation failed: %s", parser.error().c_str());
+	}
 
 	// Iterate over the readings
 	for (vector<Reading *>::const_iterator reading = readings.begin();
@@ -138,16 +142,20 @@ int				varCount = 0;
 				// Not previously seen this data point, add it.
 				variableNames[varCount] = name;
 				variables[varCount] = value;
-				symbolTable.add_variable(variableNames[varCount], variables[varCount]);
+				symbolTable.add_raw_variable(variableNames[varCount], variables[varCount]);
 				varCount++;
 				variableNames[varCount] = fullname;
 				variables[varCount] = value;
-				symbolTable.add_variable(variableNames[varCount], variables[varCount]);
+				if (!symbolTable.add_raw_variable(variableNames[varCount], variables[varCount]))
+					Logger::getLogger()->error("Failed to add variable %s", fullname.c_str());
 				varCount++;
 
 				// We have added a new variable so must re-parse the expression
 				expression.register_symbol_table(symbolTable);
-				parser.compile(m_expression.c_str(), expression);
+				if (!parser.compile(m_expression.c_str(), expression))
+				{
+					Logger::getLogger()->error("Expression compilation failed: %s", parser.error().c_str());
+				}
 			}
 		}
 		try {
