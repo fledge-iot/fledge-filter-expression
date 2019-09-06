@@ -89,9 +89,10 @@ int				varCount = 0;
 	}
 	symbolTable.add_constants();
 	expression.register_symbol_table(symbolTable);
-	if (!parser.compile(m_expression.c_str(), expression))
+	if (parser.compile(m_expression.c_str(), expression) == false && m_report)
 	{
 		Logger::getLogger()->error("Expression compilation failed: %s", parser.error().c_str());
+		m_report = false;
 	}
 
 	// Iterate over the readings
@@ -152,9 +153,10 @@ int				varCount = 0;
 
 				// We have added a new variable so must re-parse the expression
 				expression.register_symbol_table(symbolTable);
-				if (!parser.compile(m_expression.c_str(), expression))
+				if (parser.compile(m_expression.c_str(), expression) == false && m_report)
 				{
 					Logger::getLogger()->error("Expression compilation failed: %s", parser.error().c_str());
+					m_report = false;
 				}
 			}
 		}
