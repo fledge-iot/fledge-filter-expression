@@ -1,7 +1,7 @@
 #ifndef _EXPRESSION_FILTER_H
 #define _EXPRESSION_FILTER_H
 /*
- * FogLAMP "expression" filter plugin.
+ * Fledge "expression" filter plugin.
  *
  * Copyright (c) 2018 Dianomic Systems
  *
@@ -17,11 +17,11 @@
 #include <mutex>                 
 
 /**
- * A FogLAMP filter that applies an expression across a set
+ * A Fledge filter that applies an expression across a set
  * of data points in a reading and creates a new data point
  * with the result of that expression.
  */
-class ExpressionFilter : public FogLampFilter {
+class ExpressionFilter : public FledgeFilter {
 	public:
 		ExpressionFilter(const std::string& filterName,
                         ConfigCategory& filterConfig,

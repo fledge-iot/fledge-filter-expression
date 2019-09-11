@@ -1,5 +1,5 @@
 /*
- * FogLAMP "expression" filter plugin.
+ * Fledge "expression" filter plugin.
  *
  * Copyright (c) 2018 Dianomic Systems
  *
@@ -28,7 +28,7 @@ ExpressionFilter::ExpressionFilter(const std::string& filterName,
 			       ConfigCategory& filterConfig,
                                OUTPUT_HANDLE *outHandle,
                                OUTPUT_STREAM out) :
-                                  FogLampFilter(filterName, filterConfig,
+                                  FledgeFilter(filterName, filterConfig,
                                                 outHandle, out)
 {
 	handleConfig(filterConfig);
