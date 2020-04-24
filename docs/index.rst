@@ -10,7 +10,7 @@
 Expression Filter
 =================
 
-The *fledge-filter-expression* allows an arbitrary mathematical expression to be applied to data values.
+The *fledge-filter-expression* allows an arbitrary mathematical expression to be applied to data values. The expression filter allows user to augment the data at the edge to include values calculate from one or more asset to be added and acted upon both within the Fledge system itself, but also forwarded on to the up stream systems. Calculations can range from very simply manipulates of a single value to convert ranges, e.g. a linear scale to a logarithmic scale, or can combine multiple values to create composite value. E.g. create a power reading from voltage and current or work out a value that is normalized for speed.
 
 Expression filters are added in the same way as any other filters.
 
