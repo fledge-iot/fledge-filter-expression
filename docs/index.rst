@@ -30,9 +30,11 @@ Expression filters are added in the same way as any other filters.
 
     - **Datapoint Name**: The name of the new data point into which the new value will be stored.
 
-    - **Expression to apply**: This is the expression that will be evaluated for each asset reading. The expression will use the data points within the reading as symbols within the asset. See `Expressions <#Expressions>`_ below.
+    - **Expression to apply**: This is the expression that will be evaluated for each asset reading. The expression will use the data points within the reading as symbols within the asset. See `Expressions <#expressions>`_ below.
 
   - Enable the plugin and click *Done* to activate your filter
+
+.. _expressions:
 
 Expressions
 -----------
