@@ -64,4 +64,11 @@ When the filter is used in an environment in which more than one asset is passin
    (electrical.voltage * electrical.current) / (speed.rpm / 1000)
 
 
+Known Restrictions
+------------------
 
+If your asset name or datapoint name contains any characters that are mathematical symbols, i.e. +, -, \*, /, %, ^, (, ), [ or ], then these can not be used in the expressions supported by this filter.
+
+Likewise if your asset name or datapoint name is one of the reserved names of operators or functioned they can also not be used.
+
+To resolve this problem it is recommended to use the asset filter to rename the offending assets or datapoint prior to passing the data through the expression filter.
