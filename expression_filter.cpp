@@ -18,7 +18,7 @@
 using namespace std;
 using namespace rapidjson;
 
-#define MAX_VARS	40	// Maximum number of variables supported in an expression
+#define MAX_VARS	1024	// Maximum number of variables supported in an expression
 
 /**
  * Construct a ExpressionFilter, call the base class constructor and handle the
@@ -72,8 +72,8 @@ int				varCount = 0;
 		if (dpvalue.getType() == DatapointValue::T_INTEGER ||
 				dpvalue.getType() == DatapointValue::T_FLOAT)
 		{
-			variableNames[varCount++] = (*it)->getName();
-			variableNames[varCount++] = reading->getAssetName() + "." + (*it)->getName();
+			variableNames[varCount++] = replaceSpecialWithHex((*it)->getName());
+			variableNames[varCount++] = replaceSpecialWithHex(reading->getAssetName() + "." + (*it)->getName());
 		}
 		if (varCount == MAX_VARS)
 		{
@@ -127,12 +127,12 @@ int				varCount = 0;
 			string fullname = (*reading)->getAssetName() + "." + name;
 			for (int i = 0; i < varCount; i++)
 			{
-				if (variableNames[i].compare(name) == 0)
+				if (variableNames[i].compare(replaceSpecialWithHex(name)) == 0)
 				{
 					variables[i] = value;
 					found = true;
 				}
-				else if (variableNames[i].compare(fullname) == 0)
+				else if (variableNames[i].compare(replaceSpecialWithHex(fullname)) == 0)
 				{
 					variables[i] = value;
 					found = true;
@@ -141,11 +141,11 @@ int				varCount = 0;
 			if (found == false && varCount < MAX_VARS - 1)
 			{
 				// Not previously seen this data point, add it.
-				variableNames[varCount] = name;
+				variableNames[varCount] = replaceSpecialWithHex(name);
 				variables[varCount] = value;
 				symbolTable.add_raw_variable(variableNames[varCount], variables[varCount]);
 				varCount++;
-				variableNames[varCount] = fullname;
+				variableNames[varCount] = replaceSpecialWithHex(fullname);
 				variables[varCount] = value;
 				if (!symbolTable.add_raw_variable(variableNames[varCount], variables[varCount]))
 					Logger::getLogger()->error("Failed to add variable %s", fullname.c_str());
@@ -201,3 +201,21 @@ void ExpressionFilter::handleConfig(const ConfigCategory& config)
 	setDatapointName(config.getValue("name"));
 }
 
+/**
+ * Replace special character with equivalent hexadecimal character except dot(.)
+ *
+ * @param inputstr		The string to process
+ * @return	retuns processed string
+ */
+std::string ExpressionFilter::replaceSpecialWithHex(const std::string& inputstr)
+{
+	std::stringstream ss;
+	for (char c : inputstr) {
+		if (!(std::isalnum(c) || c == '.')) {
+			ss << "0X" << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(c);
+		} else {
+			ss << c;
+		}
+	}
+	return ss.str();
+}
