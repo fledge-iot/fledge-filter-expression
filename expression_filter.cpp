@@ -219,7 +219,11 @@ std::string ExpressionFilter::replaceSpecialWithHex(const std::string& inputstr)
 		}
 	}
 
-	if (m_expression.find(inputstr) != std::string::npos)
-		StringReplaceAll(m_expression,inputstr,ss.str());
-	return ss.str();
+	std::string hexStr = ss.str();
+	if (inputstr != hexStr)
+	{
+		if (m_expression.find(inputstr) != std::string::npos)
+			StringReplaceAll(m_expression,inputstr,hexStr);
+	}
+	return hexStr;
 }
