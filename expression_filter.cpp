@@ -14,6 +14,7 @@
 #include <exprtk.hpp>
 #include <expression_filter.h>
 #include <math.h>
+#include "string_utils.h"
 
 using namespace std;
 using namespace rapidjson;
@@ -217,5 +218,8 @@ std::string ExpressionFilter::replaceSpecialWithHex(const std::string& inputstr)
 			ss << c;
 		}
 	}
+
+	if (m_expression.find(inputstr) != std::string::npos)
+		StringReplaceAll(m_expression,inputstr,ss.str());
 	return ss.str();
 }
