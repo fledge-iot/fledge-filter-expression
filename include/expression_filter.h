@@ -40,6 +40,7 @@ class ExpressionFilter : public FledgeFilter {
 		void	ingest(const std::vector<Reading *>& readings);
 		void	reconfigure(const std::string& newConfig);
 	private:
+		std::string replaceSpecialWithHex(const std::string& inputstr);
 		void 		handleConfig(const ConfigCategory& conf);
 		std::string	m_expression;
 		std::string	m_dpname;
