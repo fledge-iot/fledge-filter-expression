@@ -19,6 +19,7 @@ extern "C" {
 	PLUGIN_HANDLE plugin_init(ConfigCategory* config,
 			  OUTPUT_HANDLE *outHandle,
 			  OUTPUT_STREAM output);
+	void plugin_shutdown(PLUGIN_HANDLE handle);
 	int called = 0;
 
 	void Handler(void *handle, READINGSET *readings)
@@ -53,6 +54,8 @@ TEST(EXPRESSION, Addition)
 
 
 	ReadingSet *readingSet = new ReadingSet(readings);
+	readings->clear();
+	delete readings;
 	plugin_ingest(handle, (READINGSET *)readingSet);
 
 
@@ -86,4 +89,8 @@ TEST(EXPRESSION, Addition)
 			ASSERT_STREQ(outdp->getName().c_str(), "result");
 		}
 	}
+
+	delete outReadings;
+	delete config;
+	plugin_shutdown(handle);
 }
